@@ -14,7 +14,7 @@ describe('Number Parser Service', () => {
     };
 
     describe('custom delimiters', () => {
-        it('returns [1, 2, 4] given the string "//;\\n1;2;4"', () => {
+        it('returns [1, 2, 4] given given single character delimiters', () => {
             runTest('//;\n1;2;4', [1, 2, 4]);
         });
 
@@ -22,7 +22,7 @@ describe('Number Parser Service', () => {
             runTest('//[***]\n1***2***3', [1, 2, 3]);
         });
 
-        xit('extracts numbers given multiple single-character delimiters', () => {
+        it('extracts numbers given multiple single-character delimiters', () => {
             runTest('//[*][%]\n11*22%33', [11, 22, 33]);
         });
     });

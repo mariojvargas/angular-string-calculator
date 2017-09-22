@@ -17,16 +17,20 @@ export class NumberParser {
             const expressionWithoutHeader = expression.substring('//'.length);
 
             if (expressionWithoutHeader.startsWith('[')) {
-                const delimiterMatches = expressionWithoutHeader.match(/\[(.+)\]/g);
+                const customDelimiterBlockPattern = /\[([^\]]+)\]/g;
+                const delimiterMatches = expressionWithoutHeader.match(customDelimiterBlockPattern);
 
                 let numberDelimiter;
                 if (delimiterMatches) {
-                    numberDelimiter = delimiterMatches.map(this.unwrapDelimiter).join('|');
+                    numberDelimiter = delimiterMatches
+                        .map(d => this.unwrapDelimiter(d))
+                        .map(d => this.escapeDelimiterForRegex(d))
+                        .join('|');
                 } else {
                     numberDelimiter = this.unwrapDelimiter(expressionWithoutHeader);
                 }
 
-                delimiter = new RegExp(this.escapeDelimiterForRegex(numberDelimiter), 'g');
+                delimiter = new RegExp(numberDelimiter, 'g');
                 rawNumbersSegment = numbersToExtract;
 
             } else {
