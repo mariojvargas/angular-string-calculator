@@ -7,8 +7,8 @@ describe('String Calculator Service', () => {
         stringCalculator = new StringCalculator();
     });
 
-    const runTest = (numbers: string, expected: number) => {
-        const actual = stringCalculator.add(numbers);
+    const runTest = (input: any, expected: any) => {
+        const actual = stringCalculator.add(input);
 
         expect(actual).toBe(expected);
     };
@@ -64,7 +64,7 @@ describe('String Calculator Service', () => {
         });
 
         describe('when the string contains negative numbers', () => {
-            it('throws an instance of Error', () => {
+            it('throws an instance of Error when the string contains at least one negative number', () => {
                 const numbers = '1,-1,3';
 
                 const addMethodWrapper = () => stringCalculator.add(numbers);
@@ -90,6 +90,23 @@ describe('String Calculator Service', () => {
                 const addMethodWrapper = () => stringCalculator.add(numbers);
 
                 expect(addMethodWrapper).toThrowError(expectedErrorMessage);
+            });
+
+            it('throws an instance of Error when the string consists of only one negative number', () => {
+                const numbers = '-99';
+
+                const addMethodWrapper = () => stringCalculator.add(numbers);
+
+                expect(addMethodWrapper).toThrowError(Error);
+            });
+        });
+
+        describe('custom delimiters', () => {
+            it('returns [1, 2, 4] given the string "//;\\n1;2;4"', () => {
+                const numbers = '//;\n1;2;4';
+                const expectedValue = 7;
+
+                runTest(numbers, expectedValue);
             });
         });
     });
