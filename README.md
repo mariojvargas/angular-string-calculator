@@ -1,6 +1,10 @@
-# AngularStringcalc
+# Angular String Calculator
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.1.2.
+Implementation of the String Calculator Kata using Angular, TypeScript and Karma in a TDD fashion.
+
+The requirements for the Kata can be found at http://osherove.com/tdd-kata-1/
+
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli).
 
 ## Development server
 

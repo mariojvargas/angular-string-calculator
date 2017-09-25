@@ -1,6 +1,7 @@
 {
-  "name": "angular-stringcalc",
+  "name": "angular-string-calculator",
   "version": "0.0.0",
+  "description": "Implementation of the String Calculator Kata using Angular, TypeScript and Karma.",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
