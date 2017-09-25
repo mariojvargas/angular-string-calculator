@@ -1,3 +1,6 @@
+const HeaderStartSymbol = '//';
+const HeaderAndNumbersSeparator = '\n';
+
 export class NumberParser {
     parse(rawNumbers: string): Array<number> {
         const numbersInfo = this.analyzeNumberExpression(rawNumbers);
@@ -11,34 +14,20 @@ export class NumberParser {
         let delimiter: RegExp;
         let rawNumbersSegment: string;
 
-        if (numberExpression.startsWith('//')) {
-            const [expression, numbersToExtract] = numberExpression.split('\n');
+        if (numberExpression.startsWith(HeaderStartSymbol)) {
+            const [headerInfo, numbersToExtract] = numberExpression.split(HeaderAndNumbersSeparator);
+            rawNumbersSegment = numbersToExtract;
 
-            const expressionWithoutHeader = expression.substring('//'.length);
+            const customDelimiterExpression = headerInfo.substring(HeaderStartSymbol.length);
 
-            if (expressionWithoutHeader.startsWith('[')) {
-                const customDelimiterBlockPattern = /\[([^\]]+)\]/g;
-                const delimiterMatches = expressionWithoutHeader.match(customDelimiterBlockPattern);
-
-                let numberDelimiter;
-                if (delimiterMatches) {
-                    numberDelimiter = delimiterMatches
-                        .map(d => this.unwrapDelimiter(d))
-                        .map(d => this.escapeDelimiterForRegex(d))
-                        .join('|');
-                } else {
-                    numberDelimiter = this.unwrapDelimiter(expressionWithoutHeader);
-                }
-
-                delimiter = new RegExp(numberDelimiter, 'g');
-                rawNumbersSegment = numbersToExtract;
+            if (customDelimiterExpression.startsWith('[')) {
+                delimiter = this.buildCustomDelimiterBlockPattern(customDelimiterExpression);
 
             } else {
-                delimiter = new RegExp('\\' + expressionWithoutHeader[0], 'g');
-                rawNumbersSegment = numbersToExtract;
+                delimiter = this.buildCustomDelimiterWithoutBlockPattern(customDelimiterExpression);
             }
         } else {
-            delimiter = new RegExp('[,\\n]', 'g');
+            delimiter = this.buildDefaultDelimiterPattern();
             rawNumbersSegment = numberExpression;
         }
 
@@ -56,6 +45,32 @@ export class NumberParser {
 
     private unwrapDelimiter(delimiter: string): string {
         return delimiter.replace(/\[|\]/g, '');
+    }
+
+    private buildCustomDelimiterBlockPattern(customDelimiterExpression: string): RegExp {
+        const customDelimiterBlockPattern = /\[([^\]]+)\]/g;
+        const delimiterMatches = customDelimiterExpression.match(customDelimiterBlockPattern);
+
+        let numberDelimiter;
+        if (delimiterMatches) {
+            numberDelimiter = delimiterMatches
+                .map(delimiter => this.escapeDelimiterForRegex(this.unwrapDelimiter(delimiter)))
+                .join('|');
+        } else {
+            numberDelimiter = this.unwrapDelimiter(customDelimiterExpression);
+        }
+
+        return new RegExp(numberDelimiter, 'g');
+    }
+
+    private buildCustomDelimiterWithoutBlockPattern(customDelimiterExpression: string): RegExp {
+        customDelimiterExpression = this.escapeDelimiterForRegex(customDelimiterExpression[0]);
+
+        return new RegExp(customDelimiterExpression, 'g');
+    }
+
+    private buildDefaultDelimiterPattern(): RegExp {
+        return /[,\n]/g;
     }
 }
 
