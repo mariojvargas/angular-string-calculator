@@ -11,12 +11,11 @@ export class NumberParser {
     }
 
     private analyzeNumberExpression(numberExpression: string): NumberExpressionInfo {
-        let delimiter: RegExp;
-        let rawNumbersSegment: string;
+        let delimiter: RegExp = this.buildDefaultDelimiterPattern();
+        let rawNumbersSegment = numberExpression;
 
         if (numberExpression.startsWith(HeaderStartSymbol)) {
             const [headerInfo, numbersToExtract] = numberExpression.split(HeaderAndNumbersSeparator);
-            rawNumbersSegment = numbersToExtract;
 
             const customDelimiterExpression = headerInfo.substring(HeaderStartSymbol.length);
 
@@ -26,14 +25,13 @@ export class NumberParser {
             } else {
                 delimiter = this.buildCustomDelimiterWithoutBlockPattern(customDelimiterExpression);
             }
-        } else {
-            delimiter = this.buildDefaultDelimiterPattern();
-            rawNumbersSegment = numberExpression;
+
+            rawNumbersSegment = numbersToExtract;
         }
 
         const numberExpressionInfo: NumberExpressionInfo = {
-            delimiter: delimiter,
-            rawNumbersSegment: rawNumbersSegment
+            delimiter,
+            rawNumbersSegment
         };
 
         return numberExpressionInfo;
